@@ -80,33 +80,29 @@ function(req, res) {
 /************************************************************/
 
 //session info to determine if user is logged in
-var cookieParser = require('cookie-parser');
-app.use(cookieParser("secret"));
-app.use(session({
-  secret:'secret',
-  resave: true,
-  saveUninitialized: true  
-}));
+// var cookieParser = require('cookie-parser');
+// app.use(cookieParser("secret"));
+// app.use(session({
+//   secret:'secret',
+//   resave: true,
+//   saveUninitialized: true  
+// }));
 
 var restrict = function(req, res, next) {
-  if (req.session.user) {
-    next();
-  } else {
-    req.session.error = 'Access denied';
-    res.redirect('login');
-  }
+  // if (req.session.user) {
+  //   next();
+  // } else {
+  //   req.session.error = 'Access denied';
+    res.redirect('/login');
+  // }
 };
+
+app.get('/', restrict);
+// app.get('/create')
 
 app.get('/login', 
 function(req, res) {
   console.log('------------hi im inside login!');
-  res.render('/login');
-});
-
-app.get('/layout', 
-function(req, res) {
-  console.log('------------hi im inside index!');
-  restrict(req, res, next);
   res.render('/login');
 });
 
