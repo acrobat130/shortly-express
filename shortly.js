@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
-app.get('/create', 
+app.get('/create', restrict,
 function(req, res) {
   res.render('index');
 });
@@ -83,11 +83,12 @@ function(req, res) {
 //session info to determine if user is logged in
 // var cookieParser = require('cookie-parser');
 // app.use(cookieParser("secret"));
-app.use(session({
-  secret:'secret',
-  resave: true,
-  saveUninitialized: true  
-}));
+// app.use(session({
+//   secret:'secret',
+//   resave: true,
+//   saveUninitialized: true  
+// }));
+app.use(express.session());
 
 var restrict = function(req, res, next) {
   if (req.session.user) {
@@ -102,9 +103,31 @@ app.get('/', restrict);
 
 app.get('/login', 
 function(req, res) {
-  console.log('------------hi im inside login!');
+  // console.log('this is req.body -------', req.body);
   res.render('login');
 });
+
+app.post('/login',
+function(req, res) {
+  var username = req.body.username;
+  var password = req.body.password;
+  console.log('this is req.body -------', req.body);
+
+  if (/* username and password pass matching/truth test */) {
+    request.session.regenerate(function(){
+      req.session.user = username;
+      res.redirect('/')
+    });
+  } else {
+    res.redirect('login')
+  }
+
+});
+
+// when posting to signup
+  // see if user's in database
+    // if not, create new User
+      // .save()
 
 // console.log('this is req.secret---->',req.secret)
 
