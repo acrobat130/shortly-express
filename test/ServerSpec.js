@@ -72,7 +72,7 @@ describe('', function() {
 
     var requestWithSession = request.defaults({jar: true});
 
-    beforeEach(function(){
+    xbeforeEach(function(){
       // create a user that we can then log-in with
       new User({
           'username': 'Phillip',
@@ -159,7 +159,7 @@ describe('', function() {
 
     }); // 'Shortening links'
 
-    describe('With previously saved urls:', function(){
+    xdescribe('With previously saved urls:', function(){
 
       var link;
 

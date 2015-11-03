@@ -27,6 +27,7 @@ app.get('/create',
 function(req, res) {
   res.render('index');
 });
+// app.get('/create', restrict);
 
 app.get('/links', 
 function(req, res) {
@@ -82,28 +83,27 @@ function(req, res) {
 //session info to determine if user is logged in
 // var cookieParser = require('cookie-parser');
 // app.use(cookieParser("secret"));
-// app.use(session({
-//   secret:'secret',
-//   resave: true,
-//   saveUninitialized: true  
-// }));
+app.use(session({
+  secret:'secret',
+  resave: true,
+  saveUninitialized: true  
+}));
 
 var restrict = function(req, res, next) {
-  // if (req.session.user) {
-  //   next();
-  // } else {
-  //   req.session.error = 'Access denied';
-    res.redirect('/login');
-  // }
+  if (req.session.user) {
+    next();
+  } else {
+    req.session.error = 'Access denied';
+    res.redirect('login');
+  }
 };
 
 app.get('/', restrict);
-// app.get('/create')
 
 app.get('/login', 
 function(req, res) {
   console.log('------------hi im inside login!');
-  res.render('/login');
+  res.render('login');
 });
 
 // console.log('this is req.secret---->',req.secret)
