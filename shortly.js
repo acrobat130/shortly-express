@@ -2,6 +2,7 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
+var session = require('express-session');
 
 
 var db = require('./app/config');
@@ -21,12 +22,6 @@ app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
-
-
-app.get('/', 
-function(req, res) {
-  res.render('index');
-});
 
 app.get('/create', 
 function(req, res) {
@@ -74,12 +69,48 @@ function(req, res) {
   });
 });
 
+// app.post('/login', 
+//   function(req, res) {
+//     something
+//   });
+
 /************************************************************/
 // Write your dedicated authentication routes here
 // e.g. login, logout, etc.
 /************************************************************/
 
+//session info to determine if user is logged in
+var cookieParser = require('cookie-parser');
+app.use(cookieParser("secret"));
+app.use(session({
+  secret:'secret',
+  resave: true,
+  saveUninitialized: true  
+}));
 
+var restrict = function(req, res, next) {
+  if (req.session.user) {
+    next();
+  } else {
+    req.session.error = 'Access denied';
+    res.redirect('login');
+  }
+};
+
+app.get('/login', 
+function(req, res) {
+  console.log('------------hi im inside login!');
+  res.render('/login');
+});
+
+app.get('/layout', 
+function(req, res) {
+  console.log('------------hi im inside index!');
+  restrict(req, res, next);
+  res.render('/login');
+});
+
+// console.log('this is req.secret---->',req.secret)
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
