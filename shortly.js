@@ -23,11 +23,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
-app.get('/create', restrict,
-function(req, res) {
-  res.render('index');
-});
-// app.get('/create', restrict);
+// app.get('/create', util.restrict,
+// function(req, res) {
+//   res.render('index');
+// });
+// app.get('/create', util.restrict);
 
 app.get('/links', 
 function(req, res) {
@@ -83,23 +83,16 @@ function(req, res) {
 //session info to determine if user is logged in
 // var cookieParser = require('cookie-parser');
 // app.use(cookieParser("secret"));
-// app.use(session({
-//   secret:'secret',
-//   resave: true,
-//   saveUninitialized: true  
-// }));
-app.use(express.session());
+app.use(session({
+  secret:'secret',
+  resave: true,
+  saveUninitialized: true  
+}));
+// app.use(express.session());
 
-var restrict = function(req, res, next) {
-  if (req.session.user) {
-    next();
-  } else {
-    req.session.error = 'Access denied';
-    res.redirect('login');
-  }
-};
 
-app.get('/', restrict);
+
+app.get('/', util.restrict);
 
 app.get('/login', 
 function(req, res) {
@@ -113,16 +106,27 @@ function(req, res) {
   var password = req.body.password;
   console.log('this is req.body -------', req.body);
 
-  if (/* username and password pass matching/truth test */) {
-    request.session.regenerate(function(){
-      req.session.user = username;
-      res.redirect('/')
-    });
-  } else {
-    res.redirect('login')
-  }
-
+  new User ({username: username})
+  .fetch()
+  .then(function(user){
+    if(!user){
+    res.redirect('login'); 
+    }
+    // compare passwords
+    user.comparePassword(password, function(match){
+      if(match){
+        req.session.regenerate(function(){
+          req.session.user = username;
+          res.redirect('/');
+        })
+      } else {
+        res.redirect('login');
+      }
+    })
+  })
 });
+
+
 
 // when posting to signup
   // see if user's in database

@@ -6,6 +6,9 @@ var User = db.Model.extend({
   tableName: 'users',
   // username: "",
   // password: "",
+  initialize: function(){
+    this.on('creating', this.hashPassword, this)
+  },
   hashPassword: function(model, attributes, options){
     bcrypt.hash(model.attributes.password, null, function(err,hash){
       if(err){
@@ -14,8 +17,10 @@ var User = db.Model.extend({
       model.set('password', hash);
     });
   },
-  initialize: function(){
-    this.on('creating', this.hashPassword, this)
+  comparePassword: function(inputPassword, callback){
+    bcrypt.compare(inputPassword, this.get('password'), function(err, match) {
+        callback(match);
+    })
   }
 });
 
