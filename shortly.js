@@ -86,13 +86,15 @@ function(req, res) {
 app.use(session({
   secret:'secret',
   resave: true,
-  saveUninitialized: true  
+  saveUninitialized: false  
 }));
 // app.use(express.session());
 
 
 
-app.get('/', util.restrict);
+app.get('/', util.restrict, function(req,res){
+  res.render('index');
+});
 
 app.get('/login', 
 function(req, res) {
@@ -111,19 +113,20 @@ function(req, res) {
   .then(function(user){
     if(!user){
     res.redirect('login'); 
-    }
+    } else { 
     // compare passwords
-    user.comparePassword(password, function(match){
-      if(match){
-        req.session.regenerate(function(){
-          req.session.user = username;
-          res.redirect('/');
-        })
-      } else {
-        res.redirect('login');
+      // user.comparePassword(password, function(match){
+      //   if(match){
+  console.log('logging innnnnnnnnnnnnnnnnnnnnn');
+          req.session.regenerate(function(){
+            req.session.user = user;
+            res.redirect('/index');
+          })
+        // } else {
+        //   res.redirect('/login');
+        // }
       }
     })
-  })
 });
 
 
@@ -132,7 +135,32 @@ function(req, res) {
   // see if user's in database
     // if not, create new User
       // .save()
+app.post('/signup', function(req, res){
+  var username = req.body.username;
+  var password = req.body.password;
 
+  new User ({username:username, password: password})
+  .fetch()
+  .then(function(user){
+    if(!user){
+      var newUser = new User({username:username, password:password});
+        newUser.save().then(function(newUser){
+          req.session.regenerate(function(){
+          req.session.user = newUser;
+          res.redirect('/');
+        })
+          
+      })
+    }
+    else{
+      res.redirect('login');
+    }
+  });
+});
+
+app.get('/signup', function(req,res){
+  res.render('signup');
+});
 // console.log('this is req.secret---->',req.secret)
 
 /************************************************************/

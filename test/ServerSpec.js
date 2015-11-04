@@ -9,16 +9,16 @@ var Link = require('../app/models/link');
 
 /************************************************************/
 // Mocha doesn't have a way to designate pending beforero blocks.
-// Mimic the behavior of xit and xdescribe with xbeforeEach.
+// Mimic the behavior of xit and xdescribe with beforeEach.
 // Remove the 'x' from beforeEach block when working on
 // authentication tests.
-// xbeforeEach is defined to be an empty function that doesn't
+// beforeEach is defined to be an empty function that doesn't
 // do anything. When we invoke it inside of a describe block,
 // it won't do anything! What we need to do, then, is change
-// xbeforeEach to simply be beforeEach when we want that
+// beforeEach to simply be beforeEach when we want that
 // block of tests to run. Otherwise, it will continue to run
 // the function we've defined below, which does nothing!
-// NOTE: Do not change xbeforeEach to be beforeEach in the
+// NOTE: Do not change beforeEach to be beforeEach in the
 // rows of asterisks below. If you do, you will be overwriting
 // the actual beforeEach, which we want to work!
 /************************************************************/
@@ -28,7 +28,8 @@ var xbeforeEach = function(){};
 
 describe('', function() {
 
-  xbeforeEach(function() {
+  beforeEach
+(function() {
     // log out currently signed in user
     request('http://127.0.0.1:4568/logout', function(error, res, body) {});
 
@@ -72,7 +73,8 @@ describe('', function() {
 
     var requestWithSession = request.defaults({jar: true});
 
-    xbeforeEach(function(){
+    beforeEach
+  (function(){
       // create a user that we can then log-in with
       new User({
           'username': 'Phillip',
